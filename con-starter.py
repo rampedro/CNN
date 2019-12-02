@@ -35,6 +35,7 @@ batch_size = 5
 num_classes = 6
 epochs = 20
 
+
 train_loss = []
 valid_loss = []
 test_loss = []
