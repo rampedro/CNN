@@ -30,10 +30,11 @@ def data_segmentation(data_path,target_path, task):
 
 
 # neede variable and constant 
-
+# working on selecting the name ID targets for face recognition
 batch_size = 5
 num_classes = 6
-epochs = 1
+epochs = 20
+
 
 train_loss = []
 valid_loss = []
