@@ -31,10 +31,9 @@ def data_segmentation(data_path,target_path, task):
 
 # neede variable and constant 
 # working on selecting the name ID targets for face recognition
-batch_size = 5
+batch_size = 20
 num_classes = 6
-epochs = 20
-
+epochs = 100
 
 train_loss = []
 valid_loss = []
@@ -80,6 +79,9 @@ y_val = tf.keras.utils.to_categorical(y_val, num_classes)
 
 
 
+def decode(datum):
+    return np.argmax(datum)
+
 
 
 # Build the model
@@ -98,6 +100,7 @@ model.add(Dense(units = 192, activation = 'relu'))
 model.add(Dense(units = num_classes, activation = 'softmax'))
 
 
+
 # call back function for printing the reports and adding losses
 
 class LossAndErrorPrintingCallback(tf.keras.callbacks.Callback):
@@ -114,21 +117,37 @@ class LossAndErrorPrintingCallback(tf.keras.callbacks.Callback):
       test_loss.append(score[0])
       test_acc.append(score[1])
 
-
 model.compile(loss=keras.losses.categorical_crossentropy,optimizer='adam',metrics=['accuracy'])
-model.fit(x_train, y_train,batch_size=batch_size,epochs=epochs,verbose=1,validation_data=(x_val, y_val),callbacks=[LossAndErrorPrintingCallback()])
+model.fit(x_train, y_train,batch_size=batch_size,epochs=epochs,verbose=1,shuffle=True,validation_data=(x_val, y_val),callbacks=[LossAndErrorPrintingCallback()])
 
 score = model.evaluate(x_test, y_test, verbose=0)
 
 
 
 
+#print('Test loss:', score[0])
 
-print('Test loss:', score[0])
-
-print('Test accuracy:', score[1])
+#print('Test accuracy:', score[1])
 
 epochs = range(1,epochs+1)
+
+#print("test {} answer is {}".format("tests", y_test))
+#print("test {} prediction{}".format("test 1",model.predict(x_test)))
+pred = model.predict_classes(x_test)
+prob = model.predict_proba(x_test)
+
+x=0
+
+for p in range(len(x_test)):
+    #    print(pred[p],decode(y_test[p]))
+    if pred[p] == decode(y_test[p]):
+    #    print("correctly classified")
+        x += 1
+    
+print('{} out of {} are correctly classified'.format(x,len(x_test)))
+
+
+
 plt.plot(epochs, train_loss, 'g', label='Training loss')
 plt.plot(epochs, test_loss, 'r', label='Test loss')
 plt.plot(epochs, valid_loss, 'b', label='valid loss')
@@ -139,6 +158,10 @@ plt.legend()
 plt.show()
 
 
+
+plt.plot(epochs, train_acc, 'g', label='Training accuracy')
+plt.plot(epochs, test_acc, 'r', label='Test accuracy')
+plt.plot(epochs, valid_acc, 'b', label='valid accuracy')
 plt.title('Training, Validation and Test accuracy')
 plt.xlabel('Epochs')
 plt.title('Training, Validation and Test accuracy')
